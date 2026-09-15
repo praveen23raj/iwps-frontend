@@ -1,313 +1,326 @@
-.search-box {
-  width: min(660px, calc(100vw - 40px));
-  min-height: 58px;
-  max-height: 190px;
-
-  background: #ffffff;
-
-  border: 1.5px solid #222222;
-  border-radius: 18px;
-
-  display: flex;
-  align-items: flex-end;
-
-  padding: 8px 10px;
-
-  box-sizing: border-box;
-
+// Root positioning
+.composer-container {
   position: fixed;
   left: calc(50% + 46px);
   bottom: 28px;
-
   transform: translateX(-50%);
-
+  width: min(740px, calc(100vw - 32px));
   z-index: 1000;
-
-  /*
-   * Very subtle shadow so the composer
-   * looks elevated from the page.
-   */
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.06),
-    0 12px 30px rgba(0, 0, 0, 0.08);
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    border-radius 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-
-/* Focus state */
-.search-box:focus-within {
-  border-color: #111111;
-
-  box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.08),
-    0 14px 34px rgba(0, 0, 0, 0.10);
-}
-
-
-/* =========================================================
-   TEXTAREA
-   ========================================================= */
-
-.search-box textarea {
-  flex: 1;
-
+// Clean Main Bar
+.composer-surface {
+  position: relative;
   width: 100%;
-  min-width: 0;
-
-  min-height: 40px;
-  max-height: 170px;
-
-  margin: 0 8px;
-
-  padding: 10px 4px;
-
-  border: none;
-  outline: none;
-
-  background: transparent;
-
-  color: #171717;
-
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 22px;
-
-  resize: none;
-
-  overflow-y: auto;
-
+  min-height: 56px;
+  background: #ffffff;
+  border: 1.5px solid #111827; // Crisp, sharp border
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  padding: 6px 10px 6px 14px;
   box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 
-  /*
-   * Makes long text wrap instead of going
-   * sideways.
-   */
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
+  &:focus-within {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  }
+
+  &.has-mode {
+    border-color: #000000;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  }
 }
 
-
-/* Placeholder */
-.search-box textarea::placeholder {
-  color: #8a8a8a;
-  opacity: 1;
+// Plus Button Anchor & Popover
+.popover-anchor {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
-
-/* Scrollbar */
-.search-box textarea::-webkit-scrollbar {
-  width: 5px;
-}
-
-.search-box textarea::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.search-box textarea::-webkit-scrollbar-thumb {
-  background: #c7c7c7;
+.action-btn {
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
-}
-
-.search-box textarea::-webkit-scrollbar-thumb:hover {
-  background: #999999;
-}
-
-
-/* =========================================================
-   COMMON ACTION BUTTON
-   ========================================================= */
-
-.action-btn,
-.send-btn {
-  flex: 0 0 auto;
-
-  width: 40px;
-  height: 40px;
-
   border: none;
-  border-radius: 11px;
-
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 0;
-
+  color: #374151;
   cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
 
-  transition:
-    background 0.18s ease,
-    color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-}
-
-
-/* =========================================================
-   PLUS BUTTON
-   ========================================================= */
-
-.plus {
-  background: transparent;
-  color: #444444;
-}
-
-.plus:hover {
-  background: #f2f2f2;
-  color: #111111;
-}
-
-.plus:active {
-  transform: scale(0.94);
-}
-
-
-/* =========================================================
-   IMAGE BUTTON
-   ========================================================= */
-
-.image-btn {
-  margin-left: 2px;
-
-  background: #f3f4f6;
-  color: #333333;
-}
-
-.image-btn:hover {
-  background: #e7e8eb;
-  color: #111111;
-}
-
-.image-btn:active {
-  transform: scale(0.94);
-}
-
-
-/*
- * Image mode selected
- */
-.image-btn.selected {
-  background: #2563eb;
-  color: #ffffff;
-
-  box-shadow:
-    0 3px 8px rgba(37, 99, 235, 0.25);
-}
-
-.image-btn.selected:hover {
-  background: #1d4ed8;
-}
-
-
-/* =========================================================
-   SEND BUTTON
-   ========================================================= */
-
-.send-btn {
-  margin-left: 7px;
-
-  background: #111111;
-  color: #ffffff;
-
-  border-radius: 12px;
-}
-
-.send-btn:hover:not(:disabled) {
-  background: #2b2b2b;
-
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.18);
-}
-
-.send-btn:active:not(:disabled) {
-  transform: scale(0.94);
-}
-
-
-/* Disabled send button */
-.send-btn:disabled {
-  background: #e5e5e5;
-  color: #a4a4a4;
-
-  cursor: not-allowed;
-
-  box-shadow: none;
-}
-
-
-/* =========================================================
-   KEYBOARD FOCUS
-   ========================================================= */
-
-.action-btn:focus-visible,
-.send-btn:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
-}
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
-
-@media (max-width: 800px) {
-
-  .search-box {
-    width: calc(100vw - 32px);
-
-    left: 50%;
-
-    bottom: 20px;
-
-    border-radius: 17px;
+  &:hover {
+    background: #f3f4f6;
+    color: #111827;
   }
 }
 
+.plus-btn.is-active {
+  transform: rotate(45deg);
+  background: #111827;
+  color: #ffffff;
+}
 
-@media (max-width: 500px) {
+// Floating Dropdown Menu
+.dropdown-panel {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: -4px;
+  min-width: 200px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 1010;
+  animation: dropdownIn 0.14s cubic-bezier(0.16, 1, 0.3, 1);
 
-  .search-box {
-    width: calc(100vw - 20px);
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 11px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1f2937;
+    transition: background 0.12s ease;
 
-    min-height: 54px;
+    .item-emoji {
+      font-size: 16px;
+      line-height: 1;
+    }
 
-    max-height: 175px;
+    .item-name {
+      flex: 1;
+      text-align: left;
+    }
 
-    bottom: 12px;
+    .item-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: #111827;
+      color: #ffffff;
+      padding: 3px 6px;
+      border-radius: 6px;
+    }
 
-    padding: 7px 8px;
+    &:hover {
+      background: #f3f4f6;
+    }
 
+    &.selected {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+  }
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// In-Input Active Mode Chip
+.active-mode-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #111827;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-left: 8px;
+  flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  animation: chipIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .chip-icon {
+    font-size: 13px;
+    line-height: 1;
+  }
+
+  .chip-close {
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    margin-left: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: #ffffff;
+    }
+  }
+
+  &:hover {
+    background: #1f2937;
+  }
+}
+
+@keyframes chipIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+// Vertically-Aligned Text Input
+.input-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin: 0 12px;
+  min-width: 0;
+  height: 100%;
+
+  textarea {
+    width: 100%;
+    min-height: 24px;
+    max-height: 160px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #111827;
+    font-size: 15.5px;
+    line-height: 24px;
+    font-family: inherit;
+    padding: 0;
+    margin: 0;
+    resize: none;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+
+    &::placeholder {
+      color: #9ca3af;
+      font-weight: 400;
+      line-height: 24px;
+    }
+  }
+}
+
+// Right Action Buttons
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+// Image Trigger Button
+.image-btn {
+  &.active {
+    background: #111827;
+    color: #ffffff;
+
+    &:hover {
+      background: #1f2937;
+    }
+  }
+}
+
+// Send Button
+.send-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 11px;
+  border: none;
+  background: #111827;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background: #000000;
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  // Disabled State
+  &:disabled:not(.is-loading) {
+    background: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  // Loading State
+  &.is-loading {
+    background: #111827 !important;
+    cursor: wait;
+    opacity: 1;
+  }
+}
+
+// Centered Spinner
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  box-sizing: border-box;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spinnerAnim 0.65s linear infinite;
+  display: block;
+}
+
+@keyframes spinnerAnim {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Mobile Breakpoints
+@media (max-width: 800px) {
+  .composer-container {
+    left: 50%;
+    bottom: 16px;
+    width: calc(100vw - 24px);
+  }
+}
+
+@media (max-width: 480px) {
+  .composer-surface {
+    padding: 5px 8px 5px 12px;
     border-radius: 16px;
   }
 
-
-  .search-box textarea {
-    font-size: 15px;
-    line-height: 21px;
-
-    margin: 0 5px;
-
-    padding: 9px 3px;
+  .active-mode-chip {
+    padding: 3px 8px;
+    font-size: 11.5px;
+    margin-left: 4px;
   }
 
-
-  .action-btn,
-  .send-btn {
-    width: 37px;
-    height: 37px;
-
-    border-radius: 10px;
-  }
-
-
-  .send-btn {
-    margin-left: 5px;
+  .input-container {
+    margin: 0 8px;
   }
 }

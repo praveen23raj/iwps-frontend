@@ -3,338 +3,236 @@
   <!-- =========================================
        SIDEBAR
   ========================================== -->
-
   <app-sidebar></app-sidebar>
-
 
   <!-- =========================================
        MAIN CONTENT
   ========================================== -->
-
   <main class="content">
+
+    <!-- Ambient Mesh Glow Background -->
+    <div class="ambient-glow" aria-hidden="true"></div>
 
     <!-- =========================================
          EMPTY / LANDING STATE
     ========================================== -->
-
-    <section class="welcome" *ngIf="messages.length === 0" aria-label="Welcome">
-
+    <section class="welcome" *ngIf="messages.length === 0 && !isLoading" aria-label="Welcome">
       <div class="welcome-glow"></div>
 
       <div class="welcome-content">
-
         <!-- Brand -->
-
         <div class="logo-wrap">
           <div class="logo">
             wX1<span>.ai</span>
           </div>
         </div>
 
-
         <!-- Hero copy -->
-
         <h1 class="welcome-title">
-          Create something remarkable.
+          Create something <span class="gradient-text">remarkable.</span>
         </h1>
 
         <p class="tagline">
           Create. Discover. Imagine.
         </p>
 
-
         <!-- =====================================
              QUICK ACTIONS
         ====================================== -->
-
         <div class="suggestions">
 
-          <button type="button" class="suggestion">
-
+          <button type="button" class="suggestion" (click)="onSuggestionClick('Create a stunning modern UI landing page design')">
             <span class="suggestion-icon" aria-hidden="true">
-              ✦
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/>
+              </svg>
             </span>
-
             <span class="suggestion-content">
               <strong>Create something</strong>
               <small>Bring your ideas to life</small>
             </span>
-
             <span class="suggestion-arrow" aria-hidden="true">
-              ↗
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
             </span>
-
           </button>
 
-
-          <button type="button" class="suggestion">
-
+          <button type="button" class="suggestion" (click)="onSuggestionClick('Give me 5 breakthrough AI startup ideas for 2026')">
             <span class="suggestion-icon" aria-hidden="true">
-              ⌁
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
             </span>
-
             <span class="suggestion-content">
               <strong>Explore ideas</strong>
               <small>Discover something new</small>
             </span>
-
             <span class="suggestion-arrow" aria-hidden="true">
-              ↗
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
             </span>
-
           </button>
 
-
-          <button type="button" class="suggestion">
-
+          <button type="button" class="suggestion" (click)="onSuggestionClick('What can you help me with today?')">
             <span class="suggestion-icon" aria-hidden="true">
-              ◌
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+              </svg>
             </span>
-
             <span class="suggestion-content">
               <strong>Ask anything</strong>
               <small>Start a conversation</small>
             </span>
-
             <span class="suggestion-arrow" aria-hidden="true">
-              ↗
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
             </span>
-
           </button>
 
         </div>
-
       </div>
-
     </section>
-
-
 
     <!-- =========================================
          CHAT AREA
     ========================================== -->
-
-    <section #chatContainer class="chat-area" *ngIf="messages.length > 0" aria-label="Conversation">
+    <section #chatContainer class="chat-area" *ngIf="messages.length > 0 || isLoading" aria-label="Conversation">
 
       <div *ngFor="let msg of messages" class="message-row" [ngClass]="msg.role">
 
-        <!-- =====================================
-             ASSISTANT AVATAR
-        ====================================== -->
-
+        <!-- ASSISTANT AVATAR -->
         <div class="message-avatar" *ngIf="msg.role === 'assistant'" aria-hidden="true">
-          W
+          <span>W</span>
         </div>
 
-
-        <!-- =====================================
-             MESSAGE
-        ====================================== -->
-
+        <!-- MESSAGE -->
         <article class="message" [class.image-message]="msg.type === 'image'">
 
-          <!-- ===================================
-               TEXT RESPONSE
-          ==================================== -->
-
+          <!-- TEXT RESPONSE -->
           <ng-container *ngIf="msg.type !== 'image'">
-
             <div class="text-content">
               {{ msg.content }}
             </div>
 
-
             <!-- Text actions -->
-
             <div class="message-actions">
-
               <!-- COPY -->
-
-              <button type="button" class="message-action" [class.is-success]="copiedMessage === msg.content"
-                (click)="copyText(msg.content)" [attr.aria-label]="
-                  copiedMessage === msg.content
-                    ? 'Copied'
-                    : 'Copy message'
-                ">
-
-                <svg *ngIf="copiedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+              <button type="button" class="message-action" [class.is-copied]="copiedMessage === msg.content"
+                (click)="copyText(msg.content)" [attr.aria-label]="copiedMessage === msg.content ? 'Copied' : 'Copy message'">
+                
+                <svg *ngIf="copiedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <rect x="9" y="9" width="10" height="10" rx="2"></rect>
-
                   <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
                 </svg>
 
-
-                <svg *ngIf="copiedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+                <svg *ngIf="copiedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m5 12 4 4L19 6"></path>
                 </svg>
 
-
-                <span class="action-tooltip">
-                  {{
-                  copiedMessage === msg.content
-                  ? 'Copied'
-                  : 'Copy'
-                  }}
-                </span>
-
+                <span class="action-tooltip">{{ copiedMessage === msg.content ? 'Copied' : 'Copy' }}</span>
               </button>
-
 
               <!-- DOWNLOAD -->
-
-              <button type="button" class="message-action" [class.is-success]="downloadedMessage === msg.content"
-                (click)="downloadText(msg.content)" [attr.aria-label]="
-                  downloadedMessage === msg.content
-                    ? 'Downloaded'
-                    : 'Download message'
-                ">
-
-                <svg *ngIf="downloadedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+              <button type="button" class="message-action" [class.is-copied]="downloadedMessage === msg.content"
+                (click)="downloadText(msg.content)" [attr.aria-label]="downloadedMessage === msg.content ? 'Downloaded' : 'Download message'">
+                
+                <svg *ngIf="downloadedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M12 3v12"></path>
                   <path d="m7 10 5 5 5-5"></path>
                   <path d="M5 21h14"></path>
                 </svg>
 
-
-                <svg *ngIf="downloadedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+                <svg *ngIf="downloadedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m5 12 4 4L19 6"></path>
                 </svg>
 
-
-                <span class="action-tooltip">
-                  {{
-                  downloadedMessage === msg.content
-                  ? 'Downloaded'
-                  : 'Download'
-                  }}
-                </span>
-
+                <span class="action-tooltip">{{ downloadedMessage === msg.content ? 'Downloaded' : 'Download' }}</span>
               </button>
-
             </div>
-
           </ng-container>
 
-
-
-          <!-- ===================================
-               GENERATED IMAGE
-          ==================================== -->
-
+          <!-- GENERATED IMAGE -->
           <ng-container *ngIf="msg.type === 'image'">
-
             <div class="image-wrapper">
-
               <img [src]="'data:image/png;base64,' + msg.content" alt="Generated image" class="generated-image" />
-
             </div>
 
-
             <!-- Image actions -->
-
             <div class="message-actions image-actions">
-
-              <!-- COPY IMAGE -->
-
-              <button type="button" class="message-action" [class.is-success]="copiedMessage === msg.content"
-                (click)="copyImage(msg.content)" [attr.aria-label]="
-                  copiedMessage === msg.content
-                    ? 'Copied'
-                    : 'Copy image'
-                ">
-
-                <svg *ngIf="copiedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+              <button type="button" class="message-action" [class.is-copied]="copiedMessage === msg.content"
+                (click)="copyImage(msg.content)" [attr.aria-label]="copiedMessage === msg.content ? 'Copied' : 'Copy image'">
+                <svg *ngIf="copiedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <rect x="9" y="9" width="10" height="10" rx="2"></rect>
-
                   <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
                 </svg>
-
-
-                <svg *ngIf="copiedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+                <svg *ngIf="copiedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m5 12 4 4L19 6"></path>
                 </svg>
-
-
-                <span class="action-tooltip">
-                  {{
-                  copiedMessage === msg.content
-                  ? 'Copied'
-                  : 'Copy'
-                  }}
-                </span>
-
+                <span class="action-tooltip">{{ copiedMessage === msg.content ? 'Copied' : 'Copy image' }}</span>
               </button>
 
-
-              <!-- DOWNLOAD IMAGE -->
-
-              <button type="button" class="message-action" [class.is-success]="downloadedMessage === msg.content"
-                (click)="downloadImage(msg.content)" [attr.aria-label]="
-                  downloadedMessage === msg.content
-                    ? 'Downloaded'
-                    : 'Download image'
-                ">
-
-                <svg *ngIf="downloadedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+              <button type="button" class="message-action" [class.is-copied]="downloadedMessage === msg.content"
+                (click)="downloadImage(msg.content)" [attr.aria-label]="downloadedMessage === msg.content ? 'Downloaded' : 'Download image'">
+                <svg *ngIf="downloadedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M12 3v12"></path>
                   <path d="m7 10 5 5 5-5"></path>
                   <path d="M5 21h14"></path>
                 </svg>
-
-
-                <svg *ngIf="downloadedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true">
+                <svg *ngIf="downloadedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m5 12 4 4L19 6"></path>
                 </svg>
-
-
-                <span class="action-tooltip">
-                  {{
-                  downloadedMessage === msg.content
-                  ? 'Downloaded'
-                  : 'Download'
-                  }}
-                </span>
-
+                <span class="action-tooltip">{{ downloadedMessage === msg.content ? 'Downloaded' : 'Download image' }}</span>
               </button>
-
             </div>
-
           </ng-container>
 
         </article>
+      </div>
 
+      <!-- =========================================
+           DYNAMIC PROCESSING & GENERATION STATES
+      ========================================== -->
+      <div *ngIf="isLoading" class="message-row assistant loading-row">
+        <div class="message-avatar pulse-avatar" aria-hidden="true">
+          <span>W</span>
+        </div>
+
+        <div class="message">
+          <!-- State 1: Image Generation in progress -->
+          <div *ngIf="loadingType === 'image'" class="image-generation-loader">
+            <div class="image-skeleton">
+              <div class="shimmer-effect"></div>
+              <div class="center-spinner">
+                <svg class="spin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+                </svg>
+              </div>
+            </div>
+            <div class="loading-label">
+              <span class="pulse-indicator"></span>
+              {{ loadingStatusText || 'Generating your image...' }}
+            </div>
+          </div>
+
+          <!-- State 2: Text / Thought Processing in progress -->
+          <div *ngIf="loadingType === 'text'" class="thought-bubble">
+            <div class="status-indicator">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <span class="status-message">{{ loadingStatusText || 'Analyzing your request...' }}</span>
+          </div>
+        </div>
       </div>
 
     </section>
 
-
-
     <!-- =========================================
-         PROMPT
+         PROMPT BAR CONTAINER
     ========================================== -->
-
     <div class="prompt-container">
-
       <app-search-bar (messageEvent)="addMessage($event)"></app-search-bar>
-
     </div>
 
   </main>
-
 </div>

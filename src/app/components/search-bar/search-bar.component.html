@@ -1,55 +1,96 @@
-<div class="search-box">
+<div class="composer-container">
 
-  <!-- Add / Plus button -->
-  <button class="action-btn plus" type="button" title="Add" aria-label="Add">
+  <!-- Main Search Box Container -->
+  <div class="composer-surface" [class.has-mode]="imageMode">
 
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Plus Button & Dropdown -->
+    <div class="popover-anchor">
+      <button 
+        class="action-btn plus-btn" 
+        [class.is-active]="isMenuOpen" 
+        type="button" 
+        (click)="toggleMenu($event)" 
+        title="Add capabilities" 
+        aria-label="Capabilities">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+      </button>
 
-      <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <!-- Options Dropdown -->
+      <div class="dropdown-panel" *ngIf="isMenuOpen" (click)="$event.stopPropagation()">
+        <button type="button" class="dropdown-item" [class.selected]="imageMode" (click)="selectMode('image')">
+          <span class="item-emoji">🎨</span>
+          <span class="item-name">Create image</span>
+          <span class="item-badge" *ngIf="imageMode">Active</span>
+        </button>
 
-    </svg>
+        <button type="button" class="dropdown-item" [class.selected]="!imageMode" (click)="selectMode('chat')">
+          <span class="item-emoji">💬</span>
+          <span class="item-name">Chat Only</span>
+          <span class="item-badge" *ngIf="!imageMode">Active</span>
+        </button>
+      </div>
+    </div>
 
-  </button>
+    <!-- Active Mode Indicator Chip (Shown inside the box when active) -->
+    <div *ngIf="imageMode" class="active-mode-chip" (click)="toggleImageMode()" title="Click to cancel image mode">
+      <span class="chip-icon">🎨</span>
+      <span class="chip-text">Create Image</span>
+      <button class="chip-close" type="button" aria-label="Remove image mode">&times;</button>
+    </div>
 
+    <!-- Vertically Aligned Textarea Container -->
+    <div class="input-container">
+      <textarea 
+        #messageInput 
+        [(ngModel)]="prompt" 
+        (input)="autoResize(messageInput)"
+        (keydown)="handleEnter($event, messageInput)" 
+        [placeholder]="placeholderText" 
+        rows="1" 
+        aria-label="Prompt Input">
+      </textarea>
+    </div>
 
-  <!-- Message input -->
-  <textarea #messageInput [(ngModel)]="prompt" (input)="autoResize(messageInput)"
-    (keydown.enter)="handleEnter($event, messageInput)" placeholder="Ask anything..." rows="1" aria-label="Message">
-</textarea>
+    <!-- Right-Hand Controls -->
+    <div class="right-controls">
+      <!-- Image Mode Quick Toggle -->
+      <button 
+        class="action-btn image-btn" 
+        [class.active]="imageMode" 
+        type="button" 
+        (click)="toggleImageMode()"
+        [title]="imageMode ? 'Image mode active (Click to revert)' : 'Switch to image generation'" 
+        aria-label="Image generation toggle">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="3.5" />
+          <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+          <path d="M21 15L16 10L5 21" />
+        </svg>
+      </button>
 
+      <!-- Send Button -->
+      <button 
+        class="send-btn" 
+        [class.is-loading]="isLoading"
+        type="button" 
+        (click)="askClaude()" 
+        [disabled]="!prompt.trim() || isLoading" 
+        title="Send prompt"
+        aria-label="Send prompt">
+        
+        <!-- Arrow Icon -->
+        <svg *ngIf="!isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
 
+        <!-- Loader Spinner -->
+        <span *ngIf="isLoading" class="btn-spinner"></span>
+      </button>
+    </div>
 
-  <!-- Image generation button -->
-  <button class="action-btn image-btn" type="button" [class.selected]="imageMode" (click)="toggleImageMode()"
-    [title]="imageMode ? 'Image generation enabled' : 'Generate image'" aria-label="Generate image">
-
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-
-      <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8" />
-
-      <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
-
-      <path d="M21 15L16.5 10.5L7 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-        stroke-linejoin="round" />
-
-    </svg>
-
-  </button>
-
-
-  <!-- Send button -->
-  <button class="send-btn" type="button" (click)="askClaude()" [disabled]="!prompt.trim()" title="Send message"
-    aria-label="Send message">
-
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-
-      <path d="M21 3L10.5 13.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-
-      <path d="M21 3L14.3 21L10.5 13.5L3 9.7L21 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-        stroke-linejoin="round" />
-
-    </svg>
-
-  </button>
-
+  </div>
 </div>

@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Output,
+  ViewChild
+} from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { ClaudeService } from 'src/app/services/claude.service';
 import { ImageService } from 'src/app/services/image.service';
 
@@ -8,216 +16,162 @@ import { ImageService } from 'src/app/services/image.service';
   styleUrls: ['./search-bar.component.scss']
 })
 export class SearchBarComponent {
+  @ViewChild('messageInput') messageInput!: ElementRef<HTMLTextAreaElement>;
 
-  prompt = '';
+  prompt: string = '';
+  imageMode: boolean = false;
+  isMenuOpen: boolean = false;
+  isLoading: boolean = false;
 
-  // false = Claude
-  // true = Image generation
-  imageMode = false;
-
-  @Output()
-  messageEvent = new EventEmitter<any>();
-
+  @Output() messageEvent = new EventEmitter<any>();
 
   constructor(
     private claude: ClaudeService,
-    private imageService: ImageService
-  ) { }
+    private imageService: ImageService,
+    private elementRef: ElementRef
+  ) {}
 
-
-  /*
-   * Toggle image generation mode
-   */
-  toggleImageMode() {
-    this.imageMode = !this.imageMode;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.isMenuOpen = false;
+    }
   }
 
+  toggleMenu(event?: MouseEvent): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.isMenuOpen = !this.isMenuOpen;
+  }
 
-  /*
-   * Handle Enter key
-   *
-   * Enter       -> Send
-   * Shift+Enter -> New line
-   */
-  handleEnter(
-    event: Event,
-    textarea: HTMLTextAreaElement
-  ) {
+  selectMode(mode: 'chat' | 'image'): void {
+    this.imageMode = mode === 'image';
+    this.isMenuOpen = false;
+    this.focusInput();
+  }
+
+  toggleImageMode(): void {
+    this.imageMode = !this.imageMode;
+    this.focusInput();
+  }
+
+  get placeholderText(): string {
+    return this.imageMode
+      ? 'Describe the image you want to generate...'
+      : 'Ask anything...';
+  }
+
+  autoResize(textarea: HTMLTextAreaElement): void {
+    if (!textarea) return;
+    textarea.style.height = 'auto';
+    const maxHeight = 160;
+    textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
+  }
+
+  handleEnter(event: Event, textarea: HTMLTextAreaElement): void {
     const keyboardEvent = event as KeyboardEvent;
 
-    // Shift + Enter = new line
+    if (keyboardEvent.key !== 'Enter') {
+      return;
+    }
+
     if (keyboardEvent.shiftKey) {
       return;
     }
 
-    event.preventDefault();
-
+    keyboardEvent.preventDefault();
     this.askClaude();
-
-    // Reset textarea height after sending
-    setTimeout(() => {
-      textarea.style.height = '40px';
-    });
   }
 
-
-
-
-  /*
-   * Automatically expand the textarea
-   * as the user types.
-   */
-  autoResize(textarea: HTMLTextAreaElement) {
-
-    // Reset height first so shrinking works too
-    textarea.style.height = 'auto';
-
-    // Calculate required height
-    const newHeight = textarea.scrollHeight;
-
-    // Keep it within our maximum height
-    const maxHeight = 170;
-
-    textarea.style.height =
-      Math.min(newHeight, maxHeight) + 'px';
-  }
-
-
-  /*
-   * Send message
-   */
-  askClaude() {
-
-    if (!this.prompt.trim()) {
+  askClaude(): void {
+    const question = this.prompt.trim();
+    if (!question || this.isLoading) {
       return;
     }
 
-    const question = this.prompt.trim();
+    this.isLoading = true;
 
-
-    // ==========================================
-    // SHOW USER MESSAGE IMMEDIATELY
-    // ==========================================
-
+    // Dispatch user message bubble immediately
     this.messageEvent.emit({
       role: 'user',
       type: 'text',
       content: question
     });
 
-
-    // Clear input
     this.prompt = '';
-
+    if (this.messageInput?.nativeElement) {
+      this.messageInput.nativeElement.style.height = '24px';
+    }
 
     // ==========================================
     // IMAGE GENERATION MODE
     // ==========================================
-
     if (this.imageMode) {
+      this.imageService.generateImage(question)
+        .pipe(finalize(() => { this.isLoading = false; }))
+        .subscribe({
+          next: (res: any) => {
+            const base64 = res?.steps?.[0]?.content?.[0]?.data;
 
-      this.imageService.generateImage(question).subscribe({
+            if (!base64) {
+              this.messageEvent.emit({
+                role: 'assistant',
+                type: 'text',
+                content: 'Image was generated, but no visual payload returned.'
+              });
+              return;
+            }
 
-        next: (res) => {
-
-          console.log(
-            'OpenAI image response:',
-            res
-          );
-
-
-          // Get Base64 image from backend response
-          const base64 =
-            res?.steps?.[0]?.content?.[0]?.data;
-
-
-          if (!base64) {
-
-            console.error(
-              'No Base64 image found in response'
-            );
-
+            this.messageEvent.emit({
+              role: 'assistant',
+              type: 'image',
+              content: base64
+            });
+          },
+          error: (err: any) => {
+            const backendError =
+              err?.error?.error ||
+              err?.error?.message ||
+              err?.message ||
+              'Image generation is currently unavailable.';
 
             this.messageEvent.emit({
               role: 'assistant',
               type: 'text',
-              content:
-                'Image was generated, but no image data was returned.'
+              content: backendError
             });
-
-            return;
           }
-
-
-          // Send image to HomeComponent
-          this.messageEvent.emit({
-            role: 'assistant',
-            type: 'image',
-            content: base64
-          });
-
-        },
-
-
-        error: (err) => {
-
-          console.error(
-            'Image generation error:',
-            err
-          );
-
-
-          const backendError =
-            err?.error?.error ||
-            err?.error?.message ||
-            err?.message ||
-            'Image generation is currently unavailable.';
-
-
-          this.messageEvent.emit({
-            role: 'assistant',
-            type: 'text',
-            content: backendError
-          });
-
-        }
-
-      });
-
+        });
       return;
     }
 
-
     // ==========================================
-    // NORMAL CLAUDE MODE
+    // NORMAL CHAT MODE
     // ==========================================
-
-    this.claude.chat(question).subscribe({
-
-      next: (res) => {
-
-        this.messageEvent.emit({
-          role: 'assistant',
-          type: 'text',
-          content: res
-        });
-
-      },
-
-
-      error: () => {
-
-        this.messageEvent.emit({
-          role: 'assistant',
-          type: 'text',
-          content:
-            'AI agent is currently unavailable.'
-        });
-
-      }
-
-    });
-
+    this.claude.chat(question)
+      .pipe(finalize(() => { this.isLoading = false; }))
+      .subscribe({
+        next: (res: any) => {
+          this.messageEvent.emit({
+            role: 'assistant',
+            type: 'text',
+            content: res
+          });
+        },
+        error: () => {
+          this.messageEvent.emit({
+            role: 'assistant',
+            type: 'text',
+            content: 'AI agent is currently unavailable.'
+          });
+        }
+      });
   }
 
+  private focusInput(): void {
+    setTimeout(() => {
+      this.messageInput?.nativeElement?.focus();
+    }, 50);
+  }
 }
