@@ -1,0 +1,313 @@
+.search-box {
+  width: min(660px, calc(100vw - 40px));
+  min-height: 58px;
+  max-height: 190px;
+
+  background: #ffffff;
+
+  border: 1.5px solid #222222;
+  border-radius: 18px;
+
+  display: flex;
+  align-items: flex-end;
+
+  padding: 8px 10px;
+
+  box-sizing: border-box;
+
+  position: fixed;
+  left: calc(50% + 46px);
+  bottom: 28px;
+
+  transform: translateX(-50%);
+
+  z-index: 1000;
+
+  /*
+   * Very subtle shadow so the composer
+   * looks elevated from the page.
+   */
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.06),
+    0 12px 30px rgba(0, 0, 0, 0.08);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    border-radius 0.2s ease;
+}
+
+
+/* Focus state */
+.search-box:focus-within {
+  border-color: #111111;
+
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.08),
+    0 14px 34px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
+
+.search-box textarea {
+  flex: 1;
+
+  width: 100%;
+  min-width: 0;
+
+  min-height: 40px;
+  max-height: 170px;
+
+  margin: 0 8px;
+
+  padding: 10px 4px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #171717;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22px;
+
+  resize: none;
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  /*
+   * Makes long text wrap instead of going
+   * sideways.
+   */
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+
+/* Placeholder */
+.search-box textarea::placeholder {
+  color: #8a8a8a;
+  opacity: 1;
+}
+
+
+/* Scrollbar */
+.search-box textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+.search-box textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-box textarea::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border-radius: 10px;
+}
+
+.search-box textarea::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+}
+
+
+/* =========================================================
+   COMMON ACTION BUTTON
+   ========================================================= */
+
+.action-btn,
+.send-btn {
+  flex: 0 0 auto;
+
+  width: 40px;
+  height: 40px;
+
+  border: none;
+  border-radius: 11px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  cursor: pointer;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+/* =========================================================
+   PLUS BUTTON
+   ========================================================= */
+
+.plus {
+  background: transparent;
+  color: #444444;
+}
+
+.plus:hover {
+  background: #f2f2f2;
+  color: #111111;
+}
+
+.plus:active {
+  transform: scale(0.94);
+}
+
+
+/* =========================================================
+   IMAGE BUTTON
+   ========================================================= */
+
+.image-btn {
+  margin-left: 2px;
+
+  background: #f3f4f6;
+  color: #333333;
+}
+
+.image-btn:hover {
+  background: #e7e8eb;
+  color: #111111;
+}
+
+.image-btn:active {
+  transform: scale(0.94);
+}
+
+
+/*
+ * Image mode selected
+ */
+.image-btn.selected {
+  background: #2563eb;
+  color: #ffffff;
+
+  box-shadow:
+    0 3px 8px rgba(37, 99, 235, 0.25);
+}
+
+.image-btn.selected:hover {
+  background: #1d4ed8;
+}
+
+
+/* =========================================================
+   SEND BUTTON
+   ========================================================= */
+
+.send-btn {
+  margin-left: 7px;
+
+  background: #111111;
+  color: #ffffff;
+
+  border-radius: 12px;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: #2b2b2b;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.send-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+
+/* Disabled send button */
+.send-btn:disabled {
+  background: #e5e5e5;
+  color: #a4a4a4;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+/* =========================================================
+   KEYBOARD FOCUS
+   ========================================================= */
+
+.action-btn:focus-visible,
+.send-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .search-box {
+    width: calc(100vw - 32px);
+
+    left: 50%;
+
+    bottom: 20px;
+
+    border-radius: 17px;
+  }
+}
+
+
+@media (max-width: 500px) {
+
+  .search-box {
+    width: calc(100vw - 20px);
+
+    min-height: 54px;
+
+    max-height: 175px;
+
+    bottom: 12px;
+
+    padding: 7px 8px;
+
+    border-radius: 16px;
+  }
+
+
+  .search-box textarea {
+    font-size: 15px;
+    line-height: 21px;
+
+    margin: 0 5px;
+
+    padding: 9px 3px;
+  }
+
+
+  .action-btn,
+  .send-btn {
+    width: 37px;
+    height: 37px;
+
+    border-radius: 10px;
+  }
+
+
+  .send-btn {
+    margin-left: 5px;
+  }
+}

@@ -1,0 +1,53 @@
+.sidebar {
+  width: 78px;
+  border-right: 1px solid #ccc;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.brand {
+  font-size: 42px;
+  font-weight: bold;
+  margin: 22px 0;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  flex: 1;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 11px;
+  color: #222;
+  cursor: pointer;
+}
+
+.item span {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.profile {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.item a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.item a:visited,
+.item a:hover,
+.item a:active,
+.item a:focus {
+  color: inherit;
+  text-decoration: none;
+}
