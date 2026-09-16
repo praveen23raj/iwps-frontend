@@ -1,9 +1,37 @@
 <div class="home-container">
 
+  <!-- Mobile Top Header Bar with Hamburger Button -->
+  <header class="mobile-header">
+    <button 
+      type="button" 
+      class="mobile-menu-btn" 
+      (click)="toggleSidebar()" 
+      aria-label="Toggle navigation menu">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="4" y1="6" x2="20" y2="6"></line>
+        <line x1="4" y1="12" x2="20" y2="12"></line>
+        <line x1="4" y1="18" x2="20" y2="18"></line>
+      </svg>
+    </button>
+    <div class="mobile-brand">wX1<span>.ai</span></div>
+    <div class="header-spacer"></div>
+  </header>
+
+  <!-- Dark Backdrop overlay for mobile drawer -->
+  <div 
+    class="sidebar-backdrop" 
+    [class.is-open]="isSidebarOpen" 
+    (click)="closeSidebar()" 
+    aria-hidden="true">
+  </div>
+
   <!-- =========================================
        SIDEBAR
   ========================================== -->
-  <app-sidebar></app-sidebar>
+  <app-sidebar 
+    [isOpen]="isSidebarOpen" 
+    (close)="closeSidebar()">
+  </app-sidebar>
 
   <!-- =========================================
        MAIN CONTENT
@@ -115,36 +143,28 @@
 
             <!-- Text actions -->
             <div class="message-actions">
-              <!-- COPY -->
               <button type="button" class="message-action" [class.is-copied]="copiedMessage === msg.content"
                 (click)="copyText(msg.content)" [attr.aria-label]="copiedMessage === msg.content ? 'Copied' : 'Copy message'">
-                
                 <svg *ngIf="copiedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <rect x="9" y="9" width="10" height="10" rx="2"></rect>
                   <path d="M15 9V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"></path>
                 </svg>
-
                 <svg *ngIf="copiedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m5 12 4 4L19 6"></path>
                 </svg>
-
                 <span class="action-tooltip">{{ copiedMessage === msg.content ? 'Copied' : 'Copy' }}</span>
               </button>
 
-              <!-- DOWNLOAD -->
               <button type="button" class="message-action" [class.is-copied]="downloadedMessage === msg.content"
                 (click)="downloadText(msg.content)" [attr.aria-label]="downloadedMessage === msg.content ? 'Downloaded' : 'Download message'">
-                
                 <svg *ngIf="downloadedMessage !== msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                   <path d="M12 3v12"></path>
                   <path d="m7 10 5 5 5-5"></path>
                   <path d="M5 21h14"></path>
                 </svg>
-
                 <svg *ngIf="downloadedMessage === msg.content" class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="m5 12 4 4L19 6"></path>
                 </svg>
-
                 <span class="action-tooltip">{{ downloadedMessage === msg.content ? 'Downloaded' : 'Download' }}</span>
               </button>
             </div>
@@ -197,7 +217,6 @@
         </div>
 
         <div class="message">
-          <!-- State 1: Image Generation in progress -->
           <div *ngIf="loadingType === 'image'" class="image-generation-loader">
             <div class="image-skeleton">
               <div class="shimmer-effect"></div>
@@ -213,7 +232,6 @@
             </div>
           </div>
 
-          <!-- State 2: Text / Thought Processing in progress -->
           <div *ngIf="loadingType === 'text'" class="thought-bubble">
             <div class="status-indicator">
               <span class="dot"></span>
@@ -227,9 +245,7 @@
 
     </section>
 
-    <!-- =========================================
-         PROMPT BAR CONTAINER
-    ========================================== -->
+    <!-- Prompt Bar Container -->
     <div class="prompt-container">
       <app-search-bar (messageEvent)="addMessage($event)"></app-search-bar>
     </div>

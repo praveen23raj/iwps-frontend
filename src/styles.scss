@@ -1,8 +1,25 @@
-/* Fix double scrollbar by disabling root browser scrolling */
+/* Box sizing reset to prevent padding from expanding containers */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
-  overflow: hidden !important;
-}/* You can add global styles to this file, and also import other style files */
+  min-height: 100%;
+  /* Remove overflow: hidden !important from mobile viewport */
+  overflow-x: hidden;
+}
+
+/* Ensure images and media don't exceed mobile screen boundaries */
+img, svg, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Long text/links won't blow out horizontal width */
+p, span, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

@@ -65,7 +65,7 @@ export class SearchBarComponent {
   autoResize(textarea: HTMLTextAreaElement): void {
     if (!textarea) return;
     textarea.style.height = 'auto';
-    const maxHeight = 160;
+    const maxHeight = 140;
     textarea.style.height = Math.min(textarea.scrollHeight, maxHeight) + 'px';
   }
 

@@ -34,10 +34,10 @@
       </div>
     </div>
 
-    <!-- Active Mode Indicator Chip (Shown inside the box when active) -->
+    <!-- Active Mode Indicator Chip -->
     <div *ngIf="imageMode" class="active-mode-chip" (click)="toggleImageMode()" title="Click to cancel image mode">
       <span class="chip-icon">🎨</span>
-      <span class="chip-text">Create Image</span>
+      <span class="chip-text">Image</span>
       <button class="chip-close" type="button" aria-label="Remove image mode">&times;</button>
     </div>
 
@@ -81,13 +81,11 @@
         title="Send prompt"
         aria-label="Send prompt">
         
-        <!-- Arrow Icon -->
         <svg *ngIf="!isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
           <line x1="22" y1="2" x2="11" y2="13"></line>
           <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
         </svg>
 
-        <!-- Loader Spinner -->
         <span *ngIf="isLoading" class="btn-spinner"></span>
       </button>
     </div>

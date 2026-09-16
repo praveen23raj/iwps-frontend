@@ -25,6 +25,9 @@ export class HomeComponent implements AfterViewChecked {
 
   private shouldScrollToBottom = false;
 
+  /* Mobile Sidebar Drawer state */
+  isSidebarOpen = false;
+
   /* State feedback hooks */
   copiedMessage: string | null = null;
   downloadedMessage: string | null = null;
@@ -33,6 +36,14 @@ export class HomeComponent implements AfterViewChecked {
   isLoading = false;
   loadingType: 'text' | 'image' = 'text';
   loadingStatusText = '';
+
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen = false;
+  }
 
   // ==========================================
   // ADD MESSAGE & MANAGE STATES
@@ -43,7 +54,6 @@ export class HomeComponent implements AfterViewChecked {
       return;
     }
 
-    // Whenever a message arrives from the user, start loading
     if (message.role === 'user') {
       const isImageRequest = this.detectImageIntent(message.content);
       this.setLoadingState(
@@ -52,7 +62,6 @@ export class HomeComponent implements AfterViewChecked {
         isImageRequest ? 'Generating your image...' : 'Analyzing your request...'
       );
     } else {
-      // Completed response received: stop loading
       this.stopLoading();
     }
 
@@ -60,9 +69,6 @@ export class HomeComponent implements AfterViewChecked {
     this.shouldScrollToBottom = true;
   }
 
-  /**
-   * Helper: Detects whether user wants an image generated
-   */
   private detectImageIntent(text: string): boolean {
     const lower = text.toLowerCase();
     return (
@@ -74,9 +80,6 @@ export class HomeComponent implements AfterViewChecked {
     );
   }
 
-  /**
-   * Allows manual control over the status row (can be called from search bar or services)
-   */
   setLoadingState(loading: boolean, type: 'text' | 'image' = 'text', statusText = ''): void {
     this.isLoading = loading;
     this.loadingType = type;
@@ -100,7 +103,6 @@ export class HomeComponent implements AfterViewChecked {
       type: 'text'
     });
 
-    // Simulated assistant response (Connect this to your actual API)
     setTimeout(() => {
       this.addMessage({
         role: 'assistant',
@@ -134,7 +136,7 @@ export class HomeComponent implements AfterViewChecked {
   }
 
   // ==========================================
-  // COPY TEXT
+  // COPY & DOWNLOAD
   // ==========================================
 
   async copyText(text: string): Promise<void> {
@@ -177,10 +179,6 @@ export class HomeComponent implements AfterViewChecked {
     }, 1600);
   }
 
-  // ==========================================
-  // DOWNLOAD TEXT
-  // ==========================================
-
   downloadText(text: string): void {
     if (!text) return;
 
@@ -196,10 +194,6 @@ export class HomeComponent implements AfterViewChecked {
 
     this.showDownloadedState(text);
   }
-
-  // ==========================================
-  // COPY IMAGE
-  // ==========================================
 
   async copyImage(base64: string): Promise<void> {
     if (!base64) return;
@@ -217,10 +211,6 @@ export class HomeComponent implements AfterViewChecked {
       console.error('Failed to copy image:', error);
     }
   }
-
-  // ==========================================
-  // DOWNLOAD IMAGE
-  // ==========================================
 
   downloadImage(base64: string): void {
     if (!base64) return;
@@ -250,10 +240,6 @@ export class HomeComponent implements AfterViewChecked {
       }
     }, 1600);
   }
-
-  // ==========================================
-  // BASE64 → BLOB CONVERTER
-  // ==========================================
 
   private base64ToBlob(base64: string, contentType: string): Blob {
     const byteCharacters = atob(base64);
